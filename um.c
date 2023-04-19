@@ -96,26 +96,53 @@ void um_execute(UM_T um)
 
     int seg_zero_len = UArray_length(seg_zero);
     int prog_counter = 0;
-    uint32_t opcode, ra, rb, rc, word;
+    uint64_t opcode, ra, rb, rc, word;
 
     /* Execute words in segment zero until there are none left */
     while (prog_counter < seg_zero_len) {
-        word = *(uint32_t *)UArray_at(seg_zero, prog_counter);
-        opcode = Bitpack_getu(word, OP_WIDTH, WORD_SIZE - OP_WIDTH);
+        word = *(uint64_t *)UArray_at(seg_zero, prog_counter);
+        //opcode = Bitpack_getu(word, OP_WIDTH, WORD_SIZE - OP_WIDTH);
+        uint64_t shl = word << 32;
+        opcode = shl >> 60;   
+
+
         prog_counter++;
 
         /* Load value */
         if (opcode == 13) {
-            uint32_t value_size = WORD_SIZE - OP_WIDTH - R_WIDTH;
-            ra = Bitpack_getu(word, R_WIDTH, value_size);
-            uint32_t value = Bitpack_getu(word, value_size, 0);
+            //uint32_t value_size = WORD_SIZE - OP_WIDTH - R_WIDTH; --> 25
+            //ra = Bitpack_getu(word, R_WIDTH, value_size);
+
+            uint64_t shl = word << 36;
+            ra = shl >> 61;   
+
+            //uint32_t value = Bitpack_getu(word, value_size, 0);
+            
+            shl = word << 39;
+            uint64_t value = shl >> 39;   
+
+
             load_value(um, ra, value);
             continue;
         } 
 
-        ra = Bitpack_getu(word, R_WIDTH, RA_LSB);
-        rb = Bitpack_getu(word, R_WIDTH, RB_LSB);
-        rc = Bitpack_getu(word, R_WIDTH, RC_LSB);
+        //ra = Bitpack_getu(word, R_WIDTH, RA_LSB);
+        
+        shl = word << 55;
+        ra = shl >> 61;   
+
+        //rb = Bitpack_getu(word, R_WIDTH, RB_LSB);
+        
+        shl = word << 58;
+        rb = shl >> 61;   
+
+       
+        //rc = Bitpack_getu(word, R_WIDTH, RC_LSB);
+        
+        shl = word << 61;
+        rc = shl >> 61;   
+
+       
 
         /* Load Program */
         if (opcode == 12) {
@@ -239,7 +266,7 @@ void segmented_store(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc)
 
 /* Name: add
  * Input: UM_T struct; uint32_t's reprsenting registers A, B, C
- * Output: N/A
+ * Output: N/A61
  * Does: adds values in rb and rc, and stores (sum % 2 ^ 32) in ra
  * Error: Asserts if UM_T struct is NULL
  *        Asserts if any register number is valid
@@ -258,7 +285,7 @@ void add(UM_T um, uint32_t ra, uint32_t rb, uint32_t rc)
 /* Name: multiply
  * Input: UM_T struct; uint32_t's reprsenting registers A, B, C
  * Output: N/A
- * Does: multiplies values in rb and rc, and stores (product % 2 ^ 32) in ra
+ * Does: multiplies values in rb and rc, and stores61 (product % 2 ^ 32) in ra
  * Error: Asserts if UM_T struct is NULL
  *        Asserts if any register number is valid
  */
