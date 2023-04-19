@@ -16,7 +16,8 @@
 /* Struct definition of a Register_T which 
    contains an unboxed array of uint32_t's to store vals in registers */
 struct Registers_T {
-        UArray_T registers;
+        //UArray_T registers;
+        uint32_t registers[8];
 }; 
 
 /* Name: registers_new
@@ -31,13 +32,16 @@ Registers_T registers_new()
         Registers_T r_new = malloc(sizeof(*r_new));
         assert(r_new != NULL);
 
-        r_new->registers = UArray_new(REGISTER_LEN, sizeof(uint32_t));
-        assert(r_new->registers != NULL);
-
-        /* Sets register's values to 0 */
-        for (int index = 0; index < REGISTER_LEN; ++index) {
-                *(uint32_t *)UArray_at(r_new->registers, index) = 0;
+        for (int i = 0; i < 8; i ++) {
+                 r_new->registers[i] = 0;
         }
+        // r_new->registers[i] = UArray_new(REGISTER_LEN, sizeof(uint32_t));
+        // assert(r_new->registers != NULL);
+
+        // /* Sets register's values to 0 */
+        // for (int index = 0; index < REGISTER_LEN; ++index) {
+        //         *(uint32_t *)UArray_at(r_new->registers, index) = 0;
+        // }
 
         return r_new;
 }
@@ -51,8 +55,7 @@ Registers_T registers_new()
 void registers_free(Registers_T *r)
 {
         assert(*r != NULL);
-
-        UArray_free(&(*r)->registers);
+        //UArray_free(&(*r)->registers);
         free(*r);
 }
 
@@ -68,8 +71,8 @@ void registers_put(Registers_T r, uint32_t num_register, uint32_t value)
 {
         assert(r != NULL);
         assert(num_register < REGISTER_LEN);
-
-        *(uint32_t *)UArray_at(r->registers, num_register) = value;
+        r->registers[num_register] = value;
+        //*(uint32_t *)UArray_at(r->registers, num_register) = value;
 }
 
 /* Name: registers_get
@@ -85,5 +88,6 @@ uint32_t registers_get(Registers_T r, uint32_t num_register)
         assert(r != NULL);
         assert(num_register < REGISTER_LEN);
 
-        return *(uint32_t *)UArray_at(r->registers, num_register);
+        return r->registers[num_register];
+        //return *(uint32_t *)UArray_at(r->registers, num_register);
 }
